@@ -1,0 +1,42 @@
+{
+  "id": "nginxController",
+  "kind": "ReplicationController",
+  "apiVersion": "v1beta1",
+  "desiredState": {
+    "replicas": 2,
+    "replicaSelector": {"name": "frontend"},
+    "podTemplate": {
+      "desiredState": {
+         "manifest": {
+           "version": "v1beta1",
+           "id": "nginxController",
+           "restartPolicy": {"always": {}},
+           "volumes": [
+             {"name": "www-data", "source": {"hostDir" : {"path": "/opt/docker-nginx/www"}}},
+             {"name": "ssl-certificates", "source": {"hostDir" : {"path": "/opt/docker-nginx/ssl"}}},
+             {"name": "log-data", "source": {"hostDir" : {"path": "/opt/docker-nginx/log"}}},
+             {"name": "sites-enabled-data", "source": {"hostDir" : {"path": "/opt/docker-nginx/sites-enabled"}}}
+           ],
+           "containers": [{
+             "name": "php-nginx",
+             "image": "php-nginx",
+             "command": ["/start.sh"],
+             "cpu": 100,
+             "memory": 50000000,
+             "ports": [{"containerPort": 443, "hostPort": 1443}],
+             "volumeMounts": [
+               {"name": "www-data", "mountPath": "/www", "readOnly": True, "mountType": "HOST"},
+               {"name": "ssl-certificates", "mountPath": "/etc/nginx/ssl", "readOnly": True, "mountType": "HOST"},
+               {"name": "log-data", "mountPath": "/var/log", "readOnly": False, "mountType": "HOST"},
+               {"name": "sites-enabled-data", "mountPath": "/etc/nginx/sites-enabled", "readOnly": True, "mountType": "HOST"}
+             ]
+           }]
+         }
+       },
+       "labels": {
+         "name": "frontend",
+         "uses": ""
+       }
+      }},
+  "labels": {"name": "frontend"}
+}
