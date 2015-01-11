@@ -1,2 +1,2 @@
 echo Stopping $(cat docker_image_name) ...
-docker stop -t 0 $(docker ps | grep $(cat docker_image_name) | awk '{ print $1;}')
+docker stop -t 60 $(docker ps | grep $(cat docker_image_name) | awk '{ print $1;}')
